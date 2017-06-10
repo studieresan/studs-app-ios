@@ -9,12 +9,15 @@
 import UIKit
 import Pulley
 import Firebase
+import CoreLocation
+import Kingfisher
 
 class DrawerContentViewController: UIViewController {
     
     @IBOutlet var tableView: UITableView!
     @IBOutlet var gripperView: UIView!
     var locationData = LocationData.shared
+    lazy var geocoder = CLGeocoder()
 
     //@IBOutlet var seperatorHeightConstraint: NSLayoutConstraint!
     
@@ -24,6 +27,7 @@ class DrawerContentViewController: UIViewController {
         // Do any additional setup after loading the view.
         gripperView.layer.cornerRadius = 2.5
         //seperatorHeightConstraint.constant = 1.0 / UIScreen.main.scale
+        tableView.dataSource = self
     }
     
     override func didReceiveMemoryWarning() {
@@ -33,6 +37,7 @@ class DrawerContentViewController: UIViewController {
 }
 
 extension DrawerContentViewController: PulleyDrawerViewControllerDelegate {
+    
     
     func collapsedDrawerHeight() -> CGFloat {
         return 92.0
@@ -48,6 +53,11 @@ extension DrawerContentViewController: PulleyDrawerViewControllerDelegate {
     
     func drawerPositionDidChange(drawer: PulleyViewController) {
         tableView.isScrollEnabled = drawer.drawerPosition == .open
+        
+        // Reload data
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
         
         if drawer.drawerPosition != .open {
             //            searchBar.resignFirstResponder()
@@ -68,14 +78,34 @@ extension DrawerContentViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10 //locationData.locations.count
+        return locationData.locations.count + 10
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "LocationCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "LocationCell", for: indexPath) as! LocationTableViewCell
     
-        cell.textLabel?.text = locationData.locations[indexPath.row].message
-        cell.detailTextLabel?.text = "(" + String(describing: locationData.locations[indexPath.row].longitude) + ", " +  String(describing: locationData.locations[indexPath.row].latitude) + ")"
+        if (indexPath.row < locationData.locations.count) {
+            let location = locationData.locations[indexPath.row]
+            let user = locationData.users[location.uid]
+            if user != nil {
+                let url = URL(string: user!.picture)
+                cell.nameLabel?.text = user!.name
+                cell.avatarView.kf.setImage(with: url)
+            } else {
+                cell.nameLabel?.text = "Studsboll"
+            }
+            
+            if location.placemark != nil {
+                var address = ""
+                address = location.placemark!.subThoroughfare ?? ""
+                address = address + " " + (location.placemark!.thoroughfare ?? "")
+                address = address + ", " + (location.placemark!.subLocality ?? "")
+                
+                cell.locationLabel?.text = address
+            }
+//            cell.detailTextLabel?.text = "(" + String(describing: locationData.locations[indexPath.row].longitude) + ", " +  String(describing: locationData.locations[indexPath.row].latitude) + ")"
+        }
+
         return cell
     }
 }
@@ -89,12 +119,9 @@ extension DrawerContentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        if let drawer = self.parent as? PulleyViewController
-        {
+        if let drawer = self.parent as? PulleyViewController {
             let primaryContent = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PrimaryTransitionTargetViewController")
-            
             drawer.setDrawerPosition(position: .collapsed, animated: true)
-            
             drawer.setPrimaryContentViewController(controller: primaryContent, animated: false)
         }
     }

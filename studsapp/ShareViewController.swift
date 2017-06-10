@@ -9,11 +9,15 @@
 import UIKit
 import MapKit
 import Firebase
+import GoogleSignIn
+import CoreLocation
 
 class ShareViewController: UITableViewController {
     @IBOutlet weak var messageTextField: UITextField!
     @IBOutlet weak var longitudeDetailLabel: UILabel!
     @IBOutlet weak var latitudeDetailLabel: UILabel!
+    @IBOutlet weak var addressDetailLabel: UILabel!
+    @IBOutlet weak var categorySegmentedControl: UISegmentedControl!
     
     var currentLocation: CLLocation?
     var databaseRef: DatabaseReference!
@@ -23,16 +27,37 @@ class ShareViewController: UITableViewController {
         
         // Do any additional setup after loading the view.
         databaseRef = Database.database().reference()
-        
         currentLocation = LocationService.sharedInstance.currentLocation
         let coordinates = currentLocation!.coordinate
         longitudeDetailLabel.text = String(describing: coordinates.longitude)
         latitudeDetailLabel.text = String(describing: coordinates.latitude)
+        
+        CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude), completionHandler: {(placemarks, error) -> Void in
+            if (placemarks?.count)! > 0 {
+                let pm = placemarks![0]
+                self.addressDetailLabel?.text =  pm.subThoroughfare! + " " +  pm.thoroughfare!
+            }
+        })
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func segmentIndexToName(index: Int) -> String {
+        switch index {
+        case 0:
+            return "eat"
+        case 1:
+            return "drink"
+        case 2:
+            return "shopping"
+        case 3:
+            return "activity"
+        default:
+            return ""
+        }
     }
     
     // MARK: - IBAction    
@@ -48,7 +73,10 @@ class ShareViewController: UITableViewController {
         let post = [
             "lat": coordinates.latitude,
             "lng": coordinates.longitude,
-            "message": messageTextField.text ?? ""
+            "message": messageTextField.text ?? "",
+            "user": Auth.auth().currentUser!.providerData[0].uid,
+            "category": segmentIndexToName(index: categorySegmentedControl.selectedSegmentIndex),
+            "timestamp": Date().timeIntervalSince1970
             ] as [String : Any]
         
         let childUpdates = ["/locations/\(key)": post]

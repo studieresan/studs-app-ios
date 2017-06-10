@@ -10,6 +10,8 @@ import Foundation
 
 class LocationData {
     var locations = [Location]()
-
+    var users = [String: User]()
+    
     static let shared = LocationData()
+    
 }

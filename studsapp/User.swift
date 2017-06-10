@@ -1,5 +1,5 @@
 //
-//  Location.swift
+//  User.swift
 //  studsapp
 //
 //  Created by Jesper Bränn on 2017-06-08.
@@ -8,8 +8,8 @@
 
 import Foundation
 
-struct Location {
-    let message: String
-    let longitude: Double
-    let latitude: Double
+struct User {
+    let name: String
+    let email: String
+    let picture: String
 }

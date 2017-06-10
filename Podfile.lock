@@ -55,6 +55,7 @@ PODS:
   - GTMSessionFetcher/Core (1.1.10)
   - GTMSessionFetcher/Full (1.1.10):
     - GTMSessionFetcher/Core (= 1.1.10)
+  - Kingfisher (3.10.1)
   - Protobuf (3.3.0)
   - Pulley (1.4)
 
@@ -64,6 +65,7 @@ DEPENDENCIES:
   - Firebase/Database
   - Firebase/Messaging
   - GoogleSignIn
+  - Kingfisher (~> 3.0)
   - Pulley
 
 SPEC CHECKSUMS:
@@ -78,9 +80,10 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
   GTMOAuth2: 7fc9c10f5c745f4d9850419ea88889fe3baa6b7d
   GTMSessionFetcher: 30d874b96d0d76028f61fbd122801e3f030d47db
+  Kingfisher: 33a1b82140fcb14a9fc13f78dfde2a03ff8de8cb
   Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
   Pulley: 3d47a5ca819b8f35a63e9a4811d35035d484d1d9
 
-PODFILE CHECKSUM: ccde0a23184b4c5cd5624e087597984696de4e4c
+PODFILE CHECKSUM: a370c19bf6ddc9edc47947043ac08ce303e4f096
 
 COCOAPODS: 1.2.1

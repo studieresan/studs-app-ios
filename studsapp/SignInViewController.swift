@@ -28,6 +28,7 @@ class SignInViewController: UIViewController, GIDSignInUIDelegate {
         
         handle = Auth.auth().addStateDidChangeListener() { (auth, user) in
             if user != nil {
+                self.syncUserDetails()
                 self.performSegue(withIdentifier: "loggedInShareAdd", sender: nil)
             }
         }
@@ -42,6 +43,20 @@ class SignInViewController: UIViewController, GIDSignInUIDelegate {
         if let handle = handle {
             Auth.auth().removeStateDidChangeListener(handle)
         }
+    }
+    
+    func syncUserDetails() {
+        let databaseRef = Database.database().reference()
+        let key = Auth.auth().currentUser!.providerData[0].uid
+        let post = [
+            "email": Auth.auth().currentUser?.email ?? "",
+            "name": Auth.auth().currentUser?.displayName ?? "",
+            "picture": String(describing: Auth.auth().currentUser!.photoURL!)
+            ] as [String : Any]
+        
+        let childUpdates = ["/users/\(String(describing: key))": post]
+        databaseRef.updateChildValues(childUpdates)
+
     }
     
     // MARK: - IBAction

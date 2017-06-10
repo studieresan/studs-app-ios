@@ -59,12 +59,22 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
     func configureDatabase() {
         databaseRef = Database.database().reference()
         
+        _refHandle = databaseRef.child("users").observe(.childAdded, with: { [weak self] (snapshot) -> Void in
+            guard let strongSelf = self else { return }
+            let snapDict = snapshot.value as? [String: AnyObject] ?? [:]
+            
+            print(snapDict)
+            let newUser = User(name: snapDict["name"] as! String, email: snapDict["email"] as! String, picture: snapDict["picture"] as! String)
+            strongSelf.locationData.users[snapshot.key] = newUser
+        })
         // Listen for new shares
         _refHandle = databaseRef.child("locations").observe(.childAdded, with: { [weak self] (snapshot) -> Void in
             guard let strongSelf = self else { return }
             let snapDict = snapshot.value as? [String: AnyObject] ?? [:]
-            let newLocation = Location(message: snapDict["message"] as! String, longitude: snapDict["lng"] as! Double, latitude: snapDict["lat"] as! Double)
-
+            let loc = CLLocation(latitude: CLLocationDegrees(snapDict["lat"] as! Double), longitude: CLLocationDegrees(snapDict["lng"] as! Double))
+            let newLocation = Location(message: snapDict["message"] as! String, longitude: snapDict["lng"] as! Double, latitude: snapDict["lat"] as! Double, location: loc, uid: (snapDict["user"] as? String ?? ""))
+            
+            newLocation.setPlacemark()
             strongSelf.locationData.locations.append(newLocation)
             strongSelf.addPin(location: newLocation)
         })

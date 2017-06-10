@@ -13,6 +13,7 @@ target 'studsapp' do
   pod 'GoogleSignIn'
   pod 'Pulley'
   # pod 'Floaty', '~> 3.0.0'
+  pod 'Kingfisher', '~> 3.0'
   
   target 'studsappTests' do
     inherit! :search_paths
