@@ -119,10 +119,10 @@ extension DrawerContentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
+        let location = locationData.locations[indexPath.row]
         if let drawer = self.parent as? PulleyViewController {
-            let primaryContent = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PrimaryTransitionTargetViewController")
             drawer.setDrawerPosition(position: .collapsed, animated: true)
-            drawer.setPrimaryContentViewController(controller: primaryContent, animated: false)
+            (drawer.primaryContentViewController as? MapViewController)!.centerMap(location.location.coordinate)
         }
     }
 }

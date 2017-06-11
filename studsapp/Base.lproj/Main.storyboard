@@ -608,6 +608,10 @@
                                             </tableViewCell>
                                         </prototypes>
                                         <sections/>
+                                        <connections>
+                                            <outlet property="dataSource" destination="vhg-RQ-Vtv" id="0WD-lm-HzZ"/>
+                                            <outlet property="delegate" destination="vhg-RQ-Vtv" id="01v-PI-a0y"/>
+                                        </connections>
                                     </tableView>
                                 </subviews>
                                 <constraints>

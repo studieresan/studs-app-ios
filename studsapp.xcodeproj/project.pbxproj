@@ -21,9 +21,9 @@
 		3329F2391EDDF32C00044F86 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3329F2381EDDF32C00044F86 /* ShareViewController.swift */; };
 		3329F23F1EDEC82200044F86 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3329F23E1EDEC82200044F86 /* LocationService.swift */; };
 		3329F2411EDEEE1A00044F86 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3329F2401EDEEE1A00044F86 /* SignInViewController.swift */; };
+		336102401EECB4130003D0FD /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3361023F1EECB4130003D0FD /* Location.swift */; };
 		336AD74B1EE9665400700683 /* DrawerContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336AD74A1EE9665400700683 /* DrawerContentViewController.swift */; };
 		336AD74D1EE976EC00700683 /* LocationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336AD74C1EE976EC00700683 /* LocationData.swift */; };
-		336AD74F1EE979B700700683 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336AD74E1EE979B700700683 /* Location.swift */; };
 		33B5B0B61EEC5B800096D63E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B5B0B51EEC5B800096D63E /* User.swift */; };
 		33B5B0B81EEC618C0096D63E /* LocationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B5B0B71EEC618C0096D63E /* LocationTableViewCell.swift */; };
 		33B812F31EE85FC40033809C /* FAQViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B812F21EE85FC40033809C /* FAQViewController.swift */; };
@@ -67,9 +67,9 @@
 		3329F2381EDDF32C00044F86 /* ShareViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		3329F23E1EDEC82200044F86 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		3329F2401EDEEE1A00044F86 /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
+		3361023F1EECB4130003D0FD /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		336AD74A1EE9665400700683 /* DrawerContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerContentViewController.swift; sourceTree = "<group>"; };
 		336AD74C1EE976EC00700683 /* LocationData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationData.swift; sourceTree = "<group>"; };
-		336AD74E1EE979B700700683 /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Location.swift; path = ../Location.swift; sourceTree = "<group>"; };
 		33B5B0B51EEC5B800096D63E /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		33B5B0B71EEC618C0096D63E /* LocationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationTableViewCell.swift; sourceTree = "<group>"; };
 		33B812F11EE824350033809C /* studsapp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = studsapp.entitlements; sourceTree = "<group>"; };
@@ -137,24 +137,24 @@
 		3329F2051EDDC89600044F86 /* studsapp */ = {
 			isa = PBXGroup;
 			children = (
-				33B812F11EE824350033809C /* studsapp.entitlements */,
-				3329F2361EDDD83A00044F86 /* GoogleService-Info.plist */,
 				3329F2061EDDC89600044F86 /* AppDelegate.swift */,
 				3329F2081EDDC89600044F86 /* MapViewController.swift */,
-				33B5B0B71EEC618C0096D63E /* LocationTableViewCell.swift */,
 				3329F20A1EDDC89600044F86 /* HistoryViewController.swift */,
 				33B812F21EE85FC40033809C /* FAQViewController.swift */,
-				3329F20C1EDDC89600044F86 /* Main.storyboard */,
 				336AD74A1EE9665400700683 /* DrawerContentViewController.swift */,
-				336AD74E1EE979B700700683 /* Location.swift */,
+				3329F2381EDDF32C00044F86 /* ShareViewController.swift */,
+				3329F2401EDEEE1A00044F86 /* SignInViewController.swift */,
+				33B5B0B71EEC618C0096D63E /* LocationTableViewCell.swift */,
+				3361023F1EECB4130003D0FD /* Location.swift */,
 				33B5B0B51EEC5B800096D63E /* User.swift */,
 				336AD74C1EE976EC00700683 /* LocationData.swift */,
-				3329F2401EDEEE1A00044F86 /* SignInViewController.swift */,
-				3329F20F1EDDC89600044F86 /* Assets.xcassets */,
+				3329F20C1EDDC89600044F86 /* Main.storyboard */,
 				3329F2111EDDC89600044F86 /* LaunchScreen.storyboard */,
-				3329F2141EDDC89600044F86 /* Info.plist */,
-				3329F2381EDDF32C00044F86 /* ShareViewController.swift */,
+				3329F20F1EDDC89600044F86 /* Assets.xcassets */,
 				3329F23E1EDEC82200044F86 /* LocationService.swift */,
+				3329F2361EDDD83A00044F86 /* GoogleService-Info.plist */,
+				33B812F11EE824350033809C /* studsapp.entitlements */,
+				3329F2141EDDC89600044F86 /* Info.plist */,
 			);
 			path = studsapp;
 			sourceTree = "<group>";
@@ -492,10 +492,10 @@
 			files = (
 				336AD74D1EE976EC00700683 /* LocationData.swift in Sources */,
 				3329F20B1EDDC89600044F86 /* HistoryViewController.swift in Sources */,
-				336AD74F1EE979B700700683 /* Location.swift in Sources */,
 				336AD74B1EE9665400700683 /* DrawerContentViewController.swift in Sources */,
 				3329F2071EDDC89600044F86 /* AppDelegate.swift in Sources */,
 				3329F2411EDEEE1A00044F86 /* SignInViewController.swift in Sources */,
+				336102401EECB4130003D0FD /* Location.swift in Sources */,
 				33B5B0B81EEC618C0096D63E /* LocationTableViewCell.swift in Sources */,
 				3329F23F1EDEC82200044F86 /* LocationService.swift in Sources */,
 				33B812F31EE85FC40033809C /* FAQViewController.swift in Sources */,

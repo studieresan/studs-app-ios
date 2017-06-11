@@ -63,7 +63,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
             guard let strongSelf = self else { return }
             let snapDict = snapshot.value as? [String: AnyObject] ?? [:]
             
-            print(snapDict)
             let newUser = User(name: snapDict["name"] as! String, email: snapDict["email"] as! String, picture: snapDict["picture"] as! String)
             strongSelf.locationData.users[snapshot.key] = newUser
         })
@@ -75,7 +74,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
             let newLocation = Location(message: snapDict["message"] as! String, longitude: snapDict["lng"] as! Double, latitude: snapDict["lat"] as! Double, location: loc, uid: (snapDict["user"] as? String ?? ""))
             
             newLocation.setPlacemark()
-            strongSelf.locationData.locations.append(newLocation)
+            strongSelf.locationData.locations.insert(newLocation, at: 0)
             strongSelf.addPin(location: newLocation)
         })
     }
@@ -135,6 +134,13 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
         annotation.coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
         annotation.title = location.message
         map.addAnnotation(annotation)
+    }
+    
+    func centerMap(_ center:CLLocationCoordinate2D) {
+        let spanX = 0.007
+        let spanY = 0.007
+        let newRegion = MKCoordinateRegion(center: center, span: MKCoordinateSpanMake(spanX, spanY))
+        map.setRegion(newRegion, animated: true)
     }
     
     @IBAction func shareButtonTapped(sender: UIButton) {
