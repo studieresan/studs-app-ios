@@ -84,6 +84,9 @@ extension DrawerContentViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LocationCell", for: indexPath) as! LocationTableViewCell
     
+        let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(DrawerContentViewController.longTap))
+        cell.addGestureRecognizer(longGesture)
+        
         if (indexPath.row < locationData.locations.count) {
             let location = locationData.locations[indexPath.row]
             let user = locationData.users[location.uid]
@@ -95,18 +98,56 @@ extension DrawerContentViewController: UITableViewDataSource {
                 cell.nameLabel?.text = "Studsboll"
             }
             
+            cell.messageLabel?.text = location.message
+            
             if location.placemark != nil {
-                var address = ""
-                address = location.placemark!.subThoroughfare ?? ""
+                var address = "@"
+                address = address + " " + (location.placemark!.subThoroughfare ?? "")
                 address = address + " " + (location.placemark!.thoroughfare ?? "")
                 address = address + ", " + (location.placemark!.subLocality ?? "")
                 
                 cell.locationLabel?.text = address
             }
-//            cell.detailTextLabel?.text = "(" + String(describing: locationData.locations[indexPath.row].longitude) + ", " +  String(describing: locationData.locations[indexPath.row].latitude) + ")"
+            
+            cell.longitude = location.longitude
+            cell.latitude = location.latitude
+            
+            if location.timestamp > 0 {
+                let formatter = DateFormatter()
+                formatter.locale = Locale(identifier: "sv_SE")
+                formatter.timeStyle = .short
+                cell.dateLabel?.text = formatter.string(from: Date(timeIntervalSince1970: location.timestamp))
+            }
+            
+            switch location.category {
+                case "drink":
+                    cell.statusImage.image = UIImage(named: "bar")
+                case "eat":
+                    cell.statusImage.image = UIImage(named: "dining-room")
+                case "shopping":
+                    cell.statusImage.image = UIImage(named: "shopping-bag")
+                case "activity":
+                    cell.statusImage.image = UIImage(named: "ferris-wheel")
+                default:
+                    break;
+            }
+            
         }
 
         return cell
+    }
+    
+    func longTap(gestureRecognizer: UILongPressGestureRecognizer) {
+        guard gestureRecognizer.state == .recognized else { return }
+        
+        if let recognizerView = gestureRecognizer.view,
+            let recognizerSuperView = recognizerView.superview, recognizerView.becomeFirstResponder()
+        {
+            let menuController = UIMenuController.shared
+            menuController.setTargetRect(recognizerView.frame, in: recognizerSuperView)
+            menuController.setMenuVisible(true, animated:true)
+            menuController.menuItems = [UIMenuItem(title: "Go to map", action: #selector(LocationTableViewCell.sendToMap))]
+        }
     }
 }
 
@@ -119,10 +160,12 @@ extension DrawerContentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let location = locationData.locations[indexPath.row]
-        if let drawer = self.parent as? PulleyViewController {
-            drawer.setDrawerPosition(position: .collapsed, animated: true)
-            (drawer.primaryContentViewController as? MapViewController)!.centerMap(location.location.coordinate)
+        if locationData.locations.count > indexPath.row {
+            let location = locationData.locations[indexPath.row]
+            if let drawer = self.parent as? PulleyViewController {
+                drawer.setDrawerPosition(position: .collapsed, animated: true)
+                (drawer.primaryContentViewController as? MapViewController)!.centerMap(location.location.coordinate)
+            }
         }
     }
 }

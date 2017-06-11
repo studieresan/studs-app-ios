@@ -67,16 +67,22 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
             strongSelf.locationData.users[snapshot.key] = newUser
         })
         // Listen for new shares
-        _refHandle = databaseRef.child("locations").observe(.childAdded, with: { [weak self] (snapshot) -> Void in
-            guard let strongSelf = self else { return }
-            let snapDict = snapshot.value as? [String: AnyObject] ?? [:]
-            let loc = CLLocation(latitude: CLLocationDegrees(snapDict["lat"] as! Double), longitude: CLLocationDegrees(snapDict["lng"] as! Double))
-            let newLocation = Location(message: snapDict["message"] as! String, longitude: snapDict["lng"] as! Double, latitude: snapDict["lat"] as! Double, location: loc, uid: (snapDict["user"] as? String ?? ""))
+        _refHandle = databaseRef
+            .child("locations")
+            .queryOrdered(byChild: "timestamp")
+            .queryStarting(atValue: Date().timeIntervalSince1970 - 3600)
+            .observe(.childAdded, with: { [weak self] (snapshot) -> Void in
+                guard let strongSelf = self else { return }
+                let snapDict = snapshot.value as? [String: AnyObject] ?? [:]
+                let loc = CLLocation(latitude: CLLocationDegrees(snapDict["lat"] as! Double), longitude: CLLocationDegrees(snapDict["lng"] as! Double))
+                let timestamp = snapDict["timestamp"] as? Double
+                let newLocation = Location(message: snapDict["message"] as! String, longitude: snapDict["lng"] as! Double, latitude: snapDict["lat"] as! Double, location: loc, uid: (snapDict["user"] as? String ?? ""), timestamp: (timestamp ?? 0.0), category: (snapDict["category"] as? String ?? ""))
             
-            newLocation.setPlacemark()
-            strongSelf.locationData.locations.insert(newLocation, at: 0)
-            strongSelf.addPin(location: newLocation)
-        })
+                newLocation.setPlacemark()
+                
+                strongSelf.locationData.locations.insert(newLocation, at: 0)
+                strongSelf.addPin(location: newLocation)
+            })
     }
     
     func configureFloaty() {
@@ -130,10 +136,35 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
     }
     
     func addPin(location: Location) {
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
-        annotation.title = location.message
-        map.addAnnotation(annotation)
+        var timeDiff = location.timestamp + 3600 - Date().timeIntervalSince1970
+
+        if(timeDiff > 0) {
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
+            annotation.title = location.message
+            map.addAnnotation(annotation)
+            
+            // Annotation removal timer
+            let timer : DispatchSourceTimer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.main)
+            timer.scheduleRepeating(deadline: .now(), interval: .seconds(600), leeway: .seconds(5))
+            timer.setEventHandler {
+                timeDiff = location.timestamp + 3600 - Date().timeIntervalSince1970
+
+                let annotationView = self.map.view(for: annotation)
+                if annotationView != nil {
+                    annotationView!.alpha = CGFloat((timeDiff)/3600)
+                    if annotationView!.alpha < 0.1 {
+                        self.map.removeAnnotation(annotation)
+                        if let index = self.locationData.locations.index(of: location) {
+                            self.locationData.locations.remove(at: index)
+                        }
+                        
+                        timer.cancel()
+                    }
+                }
+            }
+            timer.resume()
+        }
     }
     
     func centerMap(_ center:CLLocationCoordinate2D) {

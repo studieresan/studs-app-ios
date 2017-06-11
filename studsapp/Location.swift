@@ -9,21 +9,25 @@
 import Foundation
 import CoreLocation
 
-class Location {
+class Location: Equatable {
     var message: String
     var longitude: Double
     var latitude: Double
     var location: CLLocation
     var uid: String
+    var timestamp: Double
+    var category: String
     
     var placemark: CLPlacemark?
     
-    init(message: String, longitude: Double, latitude: Double, location: CLLocation, uid: String) {
+    init(message: String, longitude: Double, latitude: Double, location: CLLocation, uid: String, timestamp: Double, category: String) {
         self.message = message
         self.longitude = longitude
         self.latitude = latitude
         self.location = location
         self.uid = uid
+        self.timestamp = timestamp
+        self.category = category
     }
     
     func setPlacemark() {
@@ -39,4 +43,6 @@ class Location {
             }
         })
     }
+    
+    static func == (lhs: Location, rhs: Location) -> Bool { return lhs === rhs }
 }
