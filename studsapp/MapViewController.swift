@@ -76,7 +76,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
                 let snapDict = snapshot.value as? [String: AnyObject] ?? [:]
                 let loc = CLLocation(latitude: CLLocationDegrees(snapDict["lat"] as! Double), longitude: CLLocationDegrees(snapDict["lng"] as! Double))
                 let timestamp = snapDict["timestamp"] as? Double
-                let newLocation = Location(message: snapDict["message"] as! String, longitude: snapDict["lng"] as! Double, latitude: snapDict["lat"] as! Double, location: loc, uid: (snapDict["user"] as? String ?? ""), timestamp: (timestamp ?? 0.0), category: (snapDict["category"] as? String ?? ""))
+                let newLocation = Location(key: snapshot.key, message: snapDict["message"] as! String, longitude: snapDict["lng"] as! Double, latitude: snapDict["lat"] as! Double, location: loc, uid: (snapDict["user"] as? String ?? ""), timestamp: (timestamp ?? 0.0), category: (snapDict["category"] as? String ?? ""))
             
                 newLocation.setPlacemark()
                 

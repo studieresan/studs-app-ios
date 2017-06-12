@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import GoogleSignIn
 import UserNotifications
+import Pulley
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
@@ -22,6 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
         GIDSignIn.sharedInstance().delegate = self
+        
+        Database.database().isPersistenceEnabled = true
         
         // Register for remote notifications. This shows a permission dialog on first run, to
         // show the dialog at a more appropriate time move this registration accordingly.
@@ -91,10 +94,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     func handleNotification(userInfo: [AnyHashable: Any]) {
         Messaging.messaging().appDidReceiveMessage(userInfo)
 
-        if let messageID = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageID)")
-        }
+        //if let messageID = userInfo[gcmMessageIDKey] {
+        //    print("Message ID: \(messageID)")
+        //}
         print(userInfo)
+        
+        print(LocationData.shared.locations)
+        let location = LocationData.shared.locations.filter { $0.key == (userInfo["locationKey"] as! String) }
+        if location.count > 0 {
+            // Jump to correct page
+            let tabBarController = window?.rootViewController as! UITabBarController
+            tabBarController.selectedIndex = 0
+            let viewController = tabBarController.viewControllers?[0] as? PulleyViewController
+            (viewController!.primaryContentViewController as? MapViewController)!.centerMap(location[0].location.coordinate)
+        }
     }
 
     
@@ -125,6 +138,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
                 return
             }
         }
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().subscribe(toTopic: "locations")
     }
 }
 

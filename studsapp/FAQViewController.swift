@@ -23,12 +23,10 @@ class FAQViewController: UIViewController {
         //webView.scalesPageToFit = true;
         
         databaseRef = Database.database().reference()
-        databaseRef.child("static").child("faq").observeSingleEvent(of: .value, with: { (snapshot) in
+        databaseRef.child("static").child("faq").observe(.childAdded, with: { snapshot in
             let value = snapshot.value as! String
             self.webView.loadHTMLString(value, baseURL: nil)
-        }) { (error) in
-            print(error.localizedDescription)
-        }
+        })
     }
     
     override func didReceiveMemoryWarning() {

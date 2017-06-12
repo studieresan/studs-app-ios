@@ -10,6 +10,7 @@ import Foundation
 import CoreLocation
 
 class Location: Equatable {
+    var key: String
     var message: String
     var longitude: Double
     var latitude: Double
@@ -20,7 +21,8 @@ class Location: Equatable {
     
     var placemark: CLPlacemark?
     
-    init(message: String, longitude: Double, latitude: Double, location: CLLocation, uid: String, timestamp: Double, category: String) {
+    init(key: String, message: String, longitude: Double, latitude: Double, location: CLLocation, uid: String, timestamp: Double, category: String) {
+        self.key = key
         self.message = message
         self.longitude = longitude
         self.latitude = latitude
