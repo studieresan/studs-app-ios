@@ -13,6 +13,7 @@ class FAQViewController: UIViewController {
     @IBOutlet var webView: UIWebView!
     @IBOutlet var activityIndicator: UIActivityIndicatorView!
     var databaseRef: DatabaseReference!
+    fileprivate var _refHandle: DatabaseHandle!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,7 +24,7 @@ class FAQViewController: UIViewController {
         //webView.scalesPageToFit = true;
         
         databaseRef = Database.database().reference()
-        databaseRef.child("static").child("faq").observe(.childAdded, with: { snapshot in
+        _refHandle = databaseRef.child("static").child("faq").observe(.value, with: { snapshot in
             let value = snapshot.value as! String
             self.webView.loadHTMLString(value, baseURL: nil)
         })
@@ -32,6 +33,12 @@ class FAQViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    deinit {
+        if (_refHandle) != nil {
+            databaseRef.child("static").child("faq").removeObserver(withHandle: _refHandle)
+        }
     }
 }
 

@@ -18,7 +18,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
     
     var locationManager: CLLocationManager!
     var databaseRef: DatabaseReference!
-    fileprivate var _refHandle: DatabaseHandle!
+    fileprivate var _refHandle1: DatabaseHandle!
+    fileprivate var _refHandle2: DatabaseHandle!
     var trackingMap = false
     
     var locationData = LocationData.shared
@@ -59,7 +60,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
     func configureDatabase() {
         databaseRef = Database.database().reference()
         
-        _refHandle = databaseRef.child("users").observe(.childAdded, with: { [weak self] (snapshot) -> Void in
+        _refHandle1 = databaseRef.child("users").observe(.childAdded, with: { [weak self] (snapshot) -> Void in
             guard let strongSelf = self else { return }
             let snapDict = snapshot.value as? [String: AnyObject] ?? [:]
             
@@ -67,7 +68,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
             strongSelf.locationData.users[snapshot.key] = newUser
         })
         // Listen for new shares
-        _refHandle = databaseRef
+        _refHandle2 = databaseRef
             .child("locations")
             .queryOrdered(byChild: "timestamp")
             .queryStarting(atValue: Date().timeIntervalSince1970 - 3600)
@@ -106,8 +107,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
     
 
     deinit {
-        if (_refHandle) != nil {
-            databaseRef.child("locations").removeObserver(withHandle: _refHandle)
+        if (_refHandle1) != nil {
+            databaseRef.child("locations").removeObserver(withHandle: _refHandle1)
+        }
+        if (_refHandle2) != nil {
+            databaseRef.child("users").removeObserver(withHandle: _refHandle2)
         }
     }
     
