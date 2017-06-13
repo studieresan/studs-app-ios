@@ -35,7 +35,12 @@ class ShareViewController: UITableViewController {
         CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude), completionHandler: {(placemarks, error) -> Void in
             if (placemarks?.count)! > 0 {
                 let pm = placemarks![0]
-                self.addressDetailLabel?.text =  pm.subThoroughfare! + " " +  pm.thoroughfare!
+                if pm.subThoroughfare != nil {
+                    self.addressDetailLabel?.text =  pm.subThoroughfare! + " "
+                }
+                if pm.thoroughfare != nil {
+                    self.addressDetailLabel?.text = self.addressDetailLabel!.text! + pm.thoroughfare!
+                }
             }
         })
     }
