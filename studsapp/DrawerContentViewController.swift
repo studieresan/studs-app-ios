@@ -128,6 +128,8 @@ extension DrawerContentViewController: UITableViewDataSource {
                     cell.statusImage.image = UIImage(named: "shopping-bag")
                 case "activity":
                     cell.statusImage.image = UIImage(named: "ferris-wheel")
+                case "living":
+                    cell.statusImage.image = UIImage(named: "home")
                 default:
                     break;
             }

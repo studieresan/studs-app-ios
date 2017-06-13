@@ -20,6 +20,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
     var databaseRef: DatabaseReference!
     fileprivate var _refHandle1: DatabaseHandle!
     fileprivate var _refHandle2: DatabaseHandle!
+    fileprivate var _refHandle3: DatabaseHandle!
     var trackingMap = false
     
     var locationData = LocationData.shared
@@ -84,6 +85,31 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
                 strongSelf.locationData.locations.insert(newLocation, at: 0)
                 strongSelf.addPin(location: newLocation)
             })
+
+        _refHandle3 = databaseRef.child("static").child("locations").observe(.childAdded, with: { [weak self] (snapshot) -> Void in
+            guard let strongSelf = self else { return }
+            let snapDict = snapshot.value as? [String:AnyObject] ?? [:]
+            // let loc = CLLocation(latitude: CLLocationDegrees(snapDict["latitude"] as! Double), longitude: CLLocationDegrees(snapDict["longitude"] as! Double))
+            let newLocation = TipLocation(name: (snapDict["name"] as? String ?? ""), address: (snapDict["address"] as? String ?? ""), category: (snapDict["category"] as? String ?? ""), city: (snapDict["city"] as? String ?? ""), daynight: (snapDict["daynight"] as? String ?? ""), description: (snapDict["description"] as? String ?? ""), latitude: snapDict["latitude"] as? Double, longitude: snapDict["longitude"] as? Double)
+            
+            if snapDict["city"] != nil {
+                switch snapDict["city"] as! String {
+                case "New York":
+                    strongSelf.locationData.newYorkTips.append(newLocation)
+                case "Vancouver":
+                    strongSelf.locationData.vancouverTips.append(newLocation)
+                case "Portland":
+                    strongSelf.locationData.portlandTips.append(newLocation)
+                case "San Francisco":
+                    strongSelf.locationData.sanFranciscoTips.append(newLocation)
+                default:
+                    break
+                }
+
+                strongSelf.addPin(location: newLocation)
+            }
+        })
+
     }
     
     func configureFloaty() {
@@ -139,13 +165,68 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
         }
     }
     
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        
+        if annotation is MKUserLocation {
+            return nil
+        }
+        
+        if annotation is CustomAnnotation {
+            let identifier = "MyPin"
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
+            
+            if annotationView == nil {
+                annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                annotationView?.canShowCallout = true
+                annotationView?.image = UIImage(named: (annotation as! CustomAnnotation).imageName)
+                
+                let detailButton = UIButton(type: .detailDisclosure)
+                annotationView?.rightCalloutAccessoryView = detailButton
+            } else {
+                annotationView?.annotation = annotation
+            }
+            
+            return annotationView
+        } else {
+            let identifier = "regular"
+            var view: MKPinAnnotationView
+            if let dequeuedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
+                as? MKPinAnnotationView { // 2
+                dequeuedView.annotation = annotation
+                view = dequeuedView
+            } else {
+                // 3
+                view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                view.canShowCallout = true
+                view.calloutOffset = CGPoint(x: -5, y: 5)
+                view.rightCalloutAccessoryView = UIButton(type: .detailDisclosure) as UIView
+            }
+
+            
+            view.pinTintColor = MKPinAnnotationView.redPinColor()
+            
+            return view
+        }
+        
+        return nil
+    }
+    
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        let location = view.annotation as! UserAnnotation
+        let launchOptions = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving]
+        location.mapItem().openInMaps(launchOptions: launchOptions)
+    }
+
+    
     func addPin(location: Location) {
         var timeDiff = location.timestamp + 3600 - Date().timeIntervalSince1970
 
         if(timeDiff > 0) {
-            let annotation = MKPointAnnotation()
+            let user = locationData.users[location.uid]
+            let annotation = UserAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
-            annotation.title = location.message
+            annotation.title = user?.name
+            annotation.subtitle = location.message
             map.addAnnotation(annotation)
             
             // Annotation removal timer
@@ -168,6 +249,31 @@ class MapViewController: UIViewController, MKMapViewDelegate, LocationServiceDel
                 }
             }
             timer.resume()
+        }
+    }
+    
+    func addPin(location: TipLocation) {
+        if location.longitude != nil {
+            var annotation: MKPointAnnotation
+            switch location.category {
+            case "living":
+                annotation = CustomAnnotation(imageName: "home")
+//            case "eat":
+//                annotation = CustomAnnotation(imageName: "dining-room")
+//            case "drink":
+//                annotation = CustomAnnotation(imageName: "bar")
+//            case "shopping":
+//                annotation = CustomAnnotation(imageName: "shopping-bag")
+//            case "activity":
+//                annotation = CustomAnnotation(imageName: "dining-room")
+            default:
+                annotation = UserAnnotation()
+            }
+            
+            annotation.coordinate = CLLocationCoordinate2D(latitude: location.latitude!, longitude: location.longitude!)
+            annotation.title = location.name
+            map.addAnnotation(annotation)
+
         }
     }
     

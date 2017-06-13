@@ -10,6 +10,10 @@ import Foundation
 
 class LocationData {
     var locations = [Location]()
+    var newYorkTips = [TipLocation]()
+    var vancouverTips = [TipLocation]()
+    var portlandTips = [TipLocation]()
+    var sanFranciscoTips = [TipLocation]()
     var users = [String: User]()
     
     static let shared = LocationData()

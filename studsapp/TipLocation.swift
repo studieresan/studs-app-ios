@@ -16,11 +16,11 @@ class TipLocation: Equatable {
     var city: String
     var daynight: String
     var description: String
-    var latitude: Double
-    var longitude: Double
+    var latitude: Double?
+    var longitude: Double?
     
     
-    init(name: String, address: String, category: String, city: String, daynight: String, description: String, latitude: Double, longitude: Double) {
+    init(name: String, address: String, category: String, city: String, daynight: String, description: String, latitude: Double?, longitude: Double?) {
         self.name = name
         self.address = address
         self.category = category
